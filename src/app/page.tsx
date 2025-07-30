@@ -100,7 +100,7 @@ function TerminalBox({people, addItem} : {people: string[], addItem: (newItem: I
         const split = (numMatches / namesabbr.length);
         peopleamounts[index] = split;
       });
-      const noMatches = peopleamounts.reduce((acc, n)=>acc+n,0)-1 > 0.000001;
+      const noMatches = peopleamounts.reduce((acc, n)=>acc+n,0) !== 1;
       if (noMatches) {
         throw new Error("Enter names that exists");
       }
@@ -141,10 +141,11 @@ function TerminalBox({people, addItem} : {people: string[], addItem: (newItem: I
   )
 }
 
+const examplePeople = ["Alice", "Bob", "James"];
 export default function Home() {
   const [mounted, setMounted] = useState<boolean>(false);
 
-  const [people, setPeople] = useState<string[]>([]);
+  const [people, setPeople] = useState<string[]>(examplePeople);
   const [items, setItems] = useState<ItemType[]>([]);
   const [idCount, setIdCount] = useState<number>(0);
 
@@ -228,7 +229,7 @@ export default function Home() {
             <div>
               <div>
                 <label htmlFor="name">
-                  Name<br/>
+                  Item Name<br/>
                   <input name="name"></input>
                 </label>
                 <label htmlFor="price">
