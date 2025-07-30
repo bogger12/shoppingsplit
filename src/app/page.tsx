@@ -21,34 +21,10 @@ type ItemType = {
 function moneyFloor(x: number) {
   return Math.floor(x * 100) / 100;
 }
-// function moneyCeil(x: number) {
-//   return Math.ceil(x * 100) / 100;
-// }
 
 function stringFromSplit(people: string[], split: number[]) {
   return people.map((person, index) => ((split[index] != 0) ? person + " " + split[index].toFixed(2) : "")).filter(person=>person!="").join(", ");
 }
-
-function resultsAsString(items: ItemType[], people: string[]) {
-  const amounts = people.map((person, personIndex)=>moneyFloor(items.reduce((acc, item)=>acc+item.split[personIndex]*item.price, 0)));
-  const totalCost = items.reduce((acc, item)=>acc+item.price, 0);
-  const amountsSum = amounts.reduce((acc,n)=>acc+n,0);
-  const diff = totalCost - amountsSum;
-  const done = Array(people.length).fill(false);
-  for (let i = 0.00; i < diff; i += 0.01) {
-    let randomPersonIndex = -1;
-    while (randomPersonIndex < 0 || done[randomPersonIndex]) randomPersonIndex = Math.floor(Math.random() * people.length);
-    amounts[randomPersonIndex] += 0.01;
-    done[randomPersonIndex] = true;
-  }
-  return `Results:\n
-  Total: ${totalCost.toFixed(2)}\n
-  Orig summed amounts: ${amountsSum}\n
-  Summed amounts: ${amounts.reduce((acc,n)=>acc+n,0)}\n
-  ${people.map((person, personIndex)=>`${person}: ${amounts[personIndex]}`).join(", ")}
-  `
-}
-
 
 function ResultsBox({items, people} : {items: ItemType[], people: string[]}) {
   // const [totalCost, SetTotalCost] = useState<number>(0);
@@ -176,7 +152,7 @@ export default function Home() {
 
 
   useEffect(() => {
-    if (!mounted) {
+    if (!mounted && cookies.savedPeople) {
       setPeople(cookies.savedPeople);
       setMounted(true);
     }
