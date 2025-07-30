@@ -7,11 +7,9 @@
 }
 
 .mainBox {
-  /* width: 80em; */
-  /* height: 30em; */
-  /* background-color: white; */
   display: flex;
   flex-direction: column;
+  transition: 1s ease;
 }
 
 .itemsWrapper {

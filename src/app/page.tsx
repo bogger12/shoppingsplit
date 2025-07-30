@@ -153,6 +153,8 @@ function TerminalBox({people, addItem} : {people: string[], addItem: (newItem: I
 const examplePeople = ["Alice", "Bob", "James"];
 export default function Home() {
   const [mounted, setMounted] = useState<boolean>(false);
+  const [showWindow, setShowWindow] = useState<boolean>(true);
+  const [maximised, setMaximised] = useState<boolean>(false);
 
   const [people, setPeople] = useState<string[]>(examplePeople);
   const [items, setItems] = useState<ItemType[]>([]);
@@ -213,13 +215,13 @@ export default function Home() {
 
   return (
     <div className={styles.page}>
-      <div className={`window ${styles.mainBox}`}>
+      {showWindow && (<div className={`window ${styles.mainBox}`} style={maximised ? {width: "100%", height: "100%"}: {}}>
         <div className="title-bar">
           <div className="title-bar-text">Shopping Split</div>
           <div className="title-bar-controls">
             <button aria-label="Minimize"></button>
-            <button aria-label="Maximize"></button>
-            <button aria-label="Close"></button>
+            <button aria-label="Maximize" onClick={()=>setMaximised(!maximised)}></button>
+            <button aria-label="Close" onClick={()=>setShowWindow(false)}></button>
           </div>
         </div>
         <div className={styles.itemsWrapper}>
@@ -238,6 +240,7 @@ export default function Home() {
           </table>
         </div>
         <hr></hr>
+        <TerminalBox people={people} addItem={addItem}/>
         <div className={styles.entryWrapper}>
           <div className={`sunken-panel ${styles.namesSelectorWrapper}`}>
             <form action={addPerson} style={{position:"sticky", top: 0}}>
@@ -274,9 +277,8 @@ export default function Home() {
             </form>
           </fieldset>
         </div>
-        <TerminalBox people={people} addItem={addItem}/>
         <ResultsBox items={items} people={people}/>
-      </div>
+      </div>)}
     </div>
   );
 }
