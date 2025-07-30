@@ -56,8 +56,6 @@ function ResultsBox({items, people} : {items: ItemType[], people: string[]}) {
       <fieldset>
         <legend>Results</legend>
     <b>Total: ${totalCost.toFixed(2)}</b>
-    <p>diff = {diff}</p>
-    <p>amountsSum = {amountsSum}</p>
     <br /><br />
       <div className="status-bar">
         {people.map((person, personIndex)=>(
