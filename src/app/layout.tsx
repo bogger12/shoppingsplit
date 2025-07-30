@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-// import CookieWrapper from './CookieWrapper';
+import CookieWrapper from './CookieWrapper';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -23,14 +23,13 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  console.log('page loaded');
   return (
     <html lang="en">
-      {/* <CookieWrapper> */}
+      <CookieWrapper>
         <body className={`${geistSans.variable} ${geistMono.variable}`}>
           {children}
         </body>
-      {/* </CookieWrapper> */}
+      </CookieWrapper>
     </html>
   );
 }

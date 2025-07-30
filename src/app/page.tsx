@@ -7,7 +7,6 @@ import { useCookies } from 'react-cookie';
 
 import { MdDelete } from "react-icons/md";
 import { CiSquareRemove } from "react-icons/ci";
-// import CookieTest from './CookieTest';
 
 
 const peopleCookieName = "savedPeople";
@@ -17,13 +16,6 @@ type ItemType = {
   name:  string;
   price: number;
   split: number[];
-}
-
-const testItem: ItemType = {
-  id:  5,
-  name: "banana",
-  price: 4.8,
-  split: [ 0,1,0]
 }
 
 function moneyFloor(x: number) {
@@ -68,13 +60,16 @@ function ResultsBox({items, people} : {items: ItemType[], people: string[]}) {
   // SetTotalCost(totalCost);
   const amountsSum = amounts.reduce((acc,n)=>acc+n,0);
   const diff = totalCost - amountsSum;
-  const done = Array(people.length).fill(false);
-  for (let i = 0.00; i < diff; i += 0.01) {
-    let randomPersonIndex = -1;
-    while (randomPersonIndex < 0 || done[randomPersonIndex]) randomPersonIndex = Math.floor(Math.random() * people.length);
-    amounts[randomPersonIndex] += 0.01;
-    done[randomPersonIndex] = true;
+  if (people.length && diff) {
+    const done = Array(people.length).fill(false);
+    for (let i = 0.00; i < diff; i += 0.01) {
+      let randomPersonIndex = -1;
+      while (randomPersonIndex < 0 || done[randomPersonIndex]) randomPersonIndex = Math.floor(Math.random() * people.length);
+      amounts[randomPersonIndex] += 0.01;
+      done[randomPersonIndex] = true;
+    }
   }
+  
 
   return (
     <div className={styles.resultsWrapper}>
@@ -115,18 +110,24 @@ function TerminalBox({people, addItem} : {people: string[], addItem: (newItem: I
       const numamount = Math.floor(Number(amount) * 100) / 100; // round to nearest cent
       console.log(amount+ "," + namesabbr);
       if (isNaN(numamount) || namesabbr.length==0) {
-        throw new Error("Please Enter correctly formatted text");
+        throw new Error("You messed up dog");
       }
+
+      console.log("people: " + people);
 
       const peopleamounts = Array(people.length).fill(0);
 
       people.forEach((person, index) => {
         const initial = person[0].toLowerCase();
+        // console.log("checking " + initial);
         const numMatches = (namesabbr.match(new RegExp(initial, "g")) || []).length;
-        console.log("matches " + person + " is " + numMatches);
         const split = (numMatches / namesabbr.length);
         peopleamounts[index] = split;
       });
+      const noMatches = peopleamounts.reduce((acc, n)=>acc+n,0)-1 > 0.000001;
+      if (noMatches) {
+        throw new Error("Enter names that exists");
+      }
       const newItem: ItemType = {
         id: 0,
         name: "Mystery Item",
@@ -165,22 +166,26 @@ function TerminalBox({people, addItem} : {people: string[], addItem: (newItem: I
 }
 
 export default function Home() {
+  const [mounted, setMounted] = useState<boolean>(false);
+
   const [people, setPeople] = useState<string[]>([]);
-  const [items, setItems] = useState<ItemType[]>([testItem]);
+  const [items, setItems] = useState<ItemType[]>([]);
   const [idCount, setIdCount] = useState<number>(0);
 
-  // const [cookies, setCookie, removeCookie] = useCookies([peopleCookieName]);
+  const [cookies, setCookie, removeCookie] = useCookies([peopleCookieName]);
 
 
-  // useEffect(() => {
-  //   if (people.length==0) setPeople(JSON.parse(cookies.savedPeople));
-  // }, [people, cookies, setPeople]);
+  useEffect(() => {
+    if (!mounted) {
+      setPeople(cookies.savedPeople);
+      setMounted(true);
+    }
+  }, [mounted, setPeople, cookies.savedPeople]);
 
-  // useEffect(() => {
-  //   const expiryDate = new Date(new Date().setFullYear(new Date().getFullYear() + 10));
-  //   setCookie(peopleCookieName, JSON.stringify(people), { path: '/', expires: expiryDate });
-
-  // }, [people, setCookie]);
+  useEffect(() => {
+    const expiryDate = new Date(new Date().setFullYear(new Date().getFullYear() + 10));
+    setCookie(peopleCookieName, JSON.stringify(people), { path: '/', expires: expiryDate });
+  }, [people, setCookie]);
 
   function addItem(newItem: ItemType) {
     newItem.id = idCount;
@@ -217,8 +222,6 @@ export default function Home() {
 
   return (
     <div className={styles.page}>
-      {/* <p>{cookies.savedPeople ? JSON.parse(cookies.savedPeople) : null}</p> */}
-      {/* <CookieTest/> */}
       <div className={styles.mainBox}>
         <div className={styles.itemsWrapper}>
           <table>
