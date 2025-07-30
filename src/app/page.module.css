@@ -6,102 +6,88 @@
 }
 
 .mainBox {
-  width: 50em;
+  /* width: 80em; */
   /* height: 30em; */
-  background-color: white;
+  /* background-color: white; */
   display: flex;
-  border: 2px solid blue;
   flex-direction: column;
 }
 
 .itemsWrapper {
-  display: flex;
   height: 15em;
-  /* padding: 0.5em; */
-  background-color: blanchedalmond;
-  flex-direction: column;
   overflow-y: scroll;
 }
 
 .itemsWrapper > table {
   width: 100%;
-  border-collapse: collapse;
 }
 
 .itemsWrapper td {
-  padding: 1em;
+  padding: 0.5em;
 }
+
 .itemsWrapper th {
   text-align: left;
-  padding: 1em;
-  background-color: rgb(236, 206, 160);
+  padding: 0.5em;
 }
 .itemsWrapper > table > tbody > tr:nth-child(even) {
-  background-color: rgb(246, 224, 190);
+  background-color: #dfdfdf; /* button face */
 }
 
 
 .entryWrapper {
   display: flex;
   flex-direction: row;
-  width: auto;
-  height: auto;
   padding: 0.5em;
-  border: 1px solid green;
-  background-color: aqua;
   flex: 1;
   gap: 2em;
+  overflow-x: scroll;
   /* justify-content:space-between; */
 }
 
 
 .namesSelectorWrapper {
   display: flex;
-  max-height: 7em;
-  width: 8em;
-  background-color: beige;
+  height: fit-content;
+  /* width: 8em; */
+  /* background-color: beige; */
   flex-direction: column;
   overflow-y: scroll;
-  border: 1px solid black;
+  /* flex: 1; */
+  /* border: 1px solid black; */
 }
 
 .namesSelectorWrapper > form {
   display: flex;
 }
-.namesSelectorWrapper > form > input {
-  display: flex;
-}
 
 .nameItem {
   padding: 0.2em;
-  border: 1px inset blue;
+  /* border: 1px inset blue; */
   justify-content: space-between;
   display: flex;
 }
 
-.itemAddForm {
+.itemAddForm > form {
   display: flex;
   flex-direction: column;
-  width: 50%;
-  background-color: beige;
-  /* gap: 10px; */
+  gap: 5px;
 }
-.itemAddForm > div {
+.itemAddForm > form > div {
   display: flex;
   flex-direction: row;
 }
 
-.itemAddForm > div > div {
+.itemAddForm > form > div > div {
   height: 100%;
-  border: 1px solid blue;
   /* width: 50%; */
   display: flex;
   flex-direction: column;
   padding: 0.2em 0.5em;
 }
-.itemAddForm > input {
-  width: auto;
-  padding: 0.5em 1em;
+
+.itemAddForm input {
+  flex: 1;
 }
 
 .terminalWrapper {
@@ -112,12 +98,10 @@
 .terminalBox {
   width: 100%;
 }
-.terminalBox form {
-  background-color: red;
-}
+
 .terminalBox form input {
   width: 100%;
-  height: 3em;
+  /* height: 3em; */
 }
 .resultsWrapper {
     padding: 0.5em

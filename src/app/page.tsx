@@ -7,9 +7,11 @@ import { useCookies } from 'react-cookie';
 
 import { MdDelete } from "react-icons/md";
 import { CiSquareRemove } from "react-icons/ci";
+import "98.css"
 
 
 const peopleCookieName = "savedPeople";
+const E = 0.0000001;
 
 type ItemType = {
   id: number;
@@ -36,12 +38,13 @@ function ResultsBox({items, people} : {items: ItemType[], people: string[]}) {
   // SetTotalCost(totalCost);
   const amountsSum = amounts.reduce((acc,n)=>acc+n,0);
   const diff = totalCost - amountsSum;
-  if (people.length && diff) {
+  if (people.length && diff>0) {
     const done = Array(people.length).fill(false);
-    for (let i = 0.00; i < diff; i += 0.01) {
+    for (let i = 0.00; Math.abs(i-diff)>E; i += 0.01) {
       let randomPersonIndex = -1;
-      while (randomPersonIndex < 0 || done[randomPersonIndex]) randomPersonIndex = Math.floor(Math.random() * people.length);
+      while (randomPersonIndex < 0 || done[randomPersonIndex] || amounts[randomPersonIndex]===0) randomPersonIndex = Math.floor(Math.random() * people.length);
       amounts[randomPersonIndex] += 0.01;
+      console.log("0.01 added to " + people[randomPersonIndex]);
       done[randomPersonIndex] = true;
     }
   }
@@ -50,13 +53,20 @@ function ResultsBox({items, people} : {items: ItemType[], people: string[]}) {
   return (
     <div className={styles.resultsWrapper}>
       {/* <div>{resultsAsString(items, people)}</div> */}
-      <h2>Results</h2>
-      <p>Total: ${totalCost.toFixed(2)}</p>
-      <div>
+      <fieldset>
+        <legend>Results</legend>
+    <b>Total: ${totalCost.toFixed(2)}</b>
+    <p>diff = {diff}</p>
+    <p>amountsSum = {amountsSum}</p>
+    <br /><br />
+      <div className="status-bar">
         {people.map((person, personIndex)=>(
-          <div key={personIndex}>{person}: ${amounts[personIndex].toFixed(2)}</div>
+          <p className="status-bar-field" key={personIndex}>{person}: ${amounts[personIndex].toFixed(2)}</p>
         ))}
       </div>
+      </fieldset> 
+      {/* <h2>Results</h2> */}
+      
     </div>
   )
 }
@@ -131,10 +141,11 @@ function TerminalBox({people, addItem} : {people: string[], addItem: (newItem: I
   const valid = peopleAreValid(people);
 
   return (
-    <div className={styles.terminalWrapper}>
-      <div className={styles.terminalBox}>
+    <div className={`${styles.terminalWrapper}`}>
+      <div className={`${styles.terminalBox}`}>
+        <strong>Enter (##.## xyz) to add items</strong>
         <form action={(data: FormData)=>{addItemFromText(data); if (inputRef.current) {inputRef.current.focus();}}}>
-          <input ref={inputRef} name="keyEntry" disabled={!valid} defaultValue={!valid ? "To use this you must have unique initials" : ""}></input>
+          <input ref={inputRef} type="text" name="keyEntry" disabled={!valid} defaultValue={!valid ? "To use this you must have unique initials" : ""}></input>
         </form>
       </div>
     </div>
@@ -171,6 +182,10 @@ export default function Home() {
   }
   function addItemFromForm(formData: FormData) {
     const peopleamount = people.reduce((acc: number, person) => acc + (formData.get(person) ? 1 : 0), 0);
+    if (peopleamount == 0) {
+      alert("U forgot to select someone");
+      return;
+    }
 
     const newItem: ItemType = {
       id: 0,
@@ -188,6 +203,7 @@ export default function Home() {
   function addPerson(formData: FormData) {
     if (items.length != 0) { alert("You should clear the list first"); return; }
     const personName = formData.get("personName") as string
+    if (people.indexOf(personName)!=-1) { alert("This person is already in the list"); return; }
     if (personName == "") return;
     setPeople([...people, formData.get("personName") as string]);
   }
@@ -199,7 +215,15 @@ export default function Home() {
 
   return (
     <div className={styles.page}>
-      <div className={styles.mainBox}>
+      <div className={`window ${styles.mainBox}`}>
+        <div className="title-bar">
+          <div className="title-bar-text">Shopping Split</div>
+          <div className="title-bar-controls">
+            <button aria-label="Minimize"></button>
+            <button aria-label="Maximize"></button>
+            <button aria-label="Close"></button>
+          </div>
+        </div>
         <div className={styles.itemsWrapper}>
           <table>
             <thead>
@@ -215,38 +239,42 @@ export default function Home() {
             </tbody>
           </table>
         </div>
+        <hr></hr>
         <div className={styles.entryWrapper}>
-          <div className={styles.namesSelectorWrapper}>
+          <div className={`sunken-panel ${styles.namesSelectorWrapper}`}>
             <form action={addPerson} style={{position:"sticky", top: 0}}>
-            <input style={{width: "100%"}} name="personName"></input>
-            <input type="submit" value="Add"></input>
+              <input style={{width: "100%"}} name="personName" type="text"></input>
+              <input type="submit" value="Add"></input>
             </form>
             {people.map((person, index) =>(
               <div key={person} className={styles.nameItem}><p>{person}</p><CiSquareRemove onClick={()=>deletePerson(index)} style={{color: "black", cursor: "pointer"}} /></div>
             ))}
           </div>
-          <form action={addItemFromForm} className={styles.itemAddForm}>
-            <div>
+          <fieldset className={styles.itemAddForm}>
+          <legend>Add Item</legend>
+            <form action={addItemFromForm}>
               <div>
-                <label htmlFor="name">
-                  Item Name<br/>
-                  <input name="name"></input>
-                </label>
-                <label htmlFor="price">
-                  Price<br/>
-                  <input name="price" type="number" step=".01"></input>
-                </label>
-              </div>
-              <div>
-                {people.map((person: string) => (<div key={person}>
-                  <input name={person} id={person} value="yes" type="checkbox"></input>
-                  <label htmlFor={person}> {person}</label>
+                <div>
+                  <div className="field-row">
+                    <label htmlFor="name">Item Name</label>
+                    <input name="name" type="text"></input>
                   </div>
-                ))}
+                  <div className="field-row">
+                    <label htmlFor="price">Price</label>
+                    <input name="price" type="number" step=".01"></input>
+                  </div>
+                </div>
+                <div>
+                  {people.map((person: string) => (<div key={person}>
+                    <input name={person} id={person} value="yes" type="checkbox"></input>
+                    <label htmlFor={person}> {person}</label>
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
-            <input type="submit" value="Add Item"></input>
-          </form>
+              <input type="submit" value="Create"></input>
+            </form>
+          </fieldset>
         </div>
         <TerminalBox people={people} addItem={addItem}/>
         <ResultsBox items={items} people={people}/>
