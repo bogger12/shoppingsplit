@@ -87,7 +87,7 @@ function ResultsBox({items, people} : {items: ItemType[], people: string[]}) {
 function LogItem({people, item, deleteItem} : {people: string[], item: ItemType, deleteItem: () => void}) {
 
   return (<tr>
-    <td>{item.id}</td>
+    {/* <td>{item.id}</td> */}
     <td>{item.name}</td>
     <td>${item.price.toFixed(2)}</td>
     <td>
@@ -203,7 +203,7 @@ export default function Home() {
           <table>
             <thead>
               <tr style={{position:"sticky", top: 0}}>
-                <th>ID</th>
+                {/* <th>ID</th> */}
                 <th>Name</th>
                 <th>Price</th>
                 <th>People</th>
