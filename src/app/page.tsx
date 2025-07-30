@@ -1,11 +1,16 @@
-'use client'
+'use client';
 
 import Image from "next/image";
 import styles from "./page.module.css";
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import { useCookies } from 'react-cookie';
 
 import { MdDelete } from "react-icons/md";
 import { CiSquareRemove } from "react-icons/ci";
+// import CookieTest from './CookieTest';
+
+
+const peopleCookieName = "savedPeople";
 
 type ItemType = {
   id: number;
@@ -54,32 +59,33 @@ function resultsAsString(items: ItemType[], people: string[]) {
 
 
 function ResultsBox({items, people} : {items: ItemType[], people: string[]}) {
-  const [totalCost, SetTotalCost] = useState(0);
-  const [amounts, SetAmounts] = useState([]);
+  // const [totalCost, SetTotalCost] = useState<number>(0);
+  // const [amounts, SetAmounts] = useState<number[]>([]);
 
-  function resultsAsString(items: ItemType[], people: string[]) {
-    const amounts = people.map((person, personIndex)=>moneyFloor(items.reduce((acc, item)=>acc+item.split[personIndex]*item.price, 0)));
-    const totalCost = items.reduce((acc, item)=>acc+item.price, 0);
-    const amountsSum = amounts.reduce((acc,n)=>acc+n,0);
-    const diff = totalCost - amountsSum;
-    const done = Array(people.length).fill(false);
-    for (let i = 0.00; i < diff; i += 0.01) {
-      let randomPersonIndex = -1;
-      while (randomPersonIndex < 0 || done[randomPersonIndex]) randomPersonIndex = Math.floor(Math.random() * people.length);
-      amounts[randomPersonIndex] += 0.01;
-      done[randomPersonIndex] = true;
-    }
-    return `Results:\n
-    Total: ${totalCost.toFixed(2)}\n
-    Orig summed amounts: ${amountsSum}\n
-    Summed amounts: ${amounts.reduce((acc,n)=>acc+n,0)}\n
-    ${people.map((person, personIndex)=>`${person}: ${amounts[personIndex]}`).join(", ")}
-    `
+  const amounts = people.map((person, personIndex)=>moneyFloor(items.reduce((acc, item)=>acc+item.split[personIndex]*item.price, 0)));
+  // SetAmounts(amounts);
+  const totalCost = items.reduce((acc, item)=>acc+item.price, 0);
+  // SetTotalCost(totalCost);
+  const amountsSum = amounts.reduce((acc,n)=>acc+n,0);
+  const diff = totalCost - amountsSum;
+  const done = Array(people.length).fill(false);
+  for (let i = 0.00; i < diff; i += 0.01) {
+    let randomPersonIndex = -1;
+    while (randomPersonIndex < 0 || done[randomPersonIndex]) randomPersonIndex = Math.floor(Math.random() * people.length);
+    amounts[randomPersonIndex] += 0.01;
+    done[randomPersonIndex] = true;
   }
 
   return (
     <div className={styles.resultsWrapper}>
-      <div>{resultsAsString(items, people)}</div>
+      {/* <div>{resultsAsString(items, people)}</div> */}
+      <h2>Results</h2>
+      <p>Total: ${totalCost.toFixed(2)}</p>
+      <div>
+        {people.map((person, personIndex)=>(
+          <div key={personIndex}>{person}: ${amounts[personIndex].toFixed(2)}</div>
+        ))}
+      </div>
     </div>
   )
 }
@@ -159,9 +165,22 @@ function TerminalBox({people, addItem} : {people: string[], addItem: (newItem: I
 }
 
 export default function Home() {
-  const [people, setPeople] = useState(["Person 1", "Person 2", "Person 3"]);
-  const [items, setItems] = useState([testItem]);
-  const [idCount, setIdCount] = useState(0);
+  const [people, setPeople] = useState<string[]>([]);
+  const [items, setItems] = useState<ItemType[]>([testItem]);
+  const [idCount, setIdCount] = useState<number>(0);
+
+  // const [cookies, setCookie, removeCookie] = useCookies([peopleCookieName]);
+
+
+  // useEffect(() => {
+  //   if (people.length==0) setPeople(JSON.parse(cookies.savedPeople));
+  // }, [people, cookies, setPeople]);
+
+  // useEffect(() => {
+  //   const expiryDate = new Date(new Date().setFullYear(new Date().getFullYear() + 10));
+  //   setCookie(peopleCookieName, JSON.stringify(people), { path: '/', expires: expiryDate });
+
+  // }, [people, setCookie]);
 
   function addItem(newItem: ItemType) {
     newItem.id = idCount;
@@ -198,6 +217,8 @@ export default function Home() {
 
   return (
     <div className={styles.page}>
+      {/* <p>{cookies.savedPeople ? JSON.parse(cookies.savedPeople) : null}</p> */}
+      {/* <CookieTest/> */}
       <div className={styles.mainBox}>
         <div className={styles.itemsWrapper}>
           <table>
